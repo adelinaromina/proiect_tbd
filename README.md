@@ -8,3 +8,10 @@ Dupa eliminarea valorilor null am incarcat datele in parquet. <br>
 Pentru fisierele combined_data am folosit un for loop pentru a le procesa impreuna. Structura fisierului este urmatoarea: o linie cu movie id urmata de caracterul ":" apoi urmatoarele linii reprezinta informatia customer id, rating si date pentru acel movie_id. 
 Am parcurs fisierul si am creat df rows pentru a include informatia de movie id la nivelul fiecarui rand apoi le am adaugat intr un dataframe. <br>
 Fisierele nu au missing data, ultimul pas a fost convertirea la un format numeric, respectiv de tip data pentru coloana "date" si incarcarea intr-un fisier parquet.
+<br>
+<h2>Stocarea datelor:</h2> <br>
+Pentru a stoca datele am utilizat Google Cloud Storage și Big Query. Am creat un bucket (https://console.cloud.google.com/storage/browser/data_tbd) și am adăugat cele două fișiere parket. Următorul pas a fost creare unui Dataset în BigQuery (https://console.cloud.google.com/bigquery?ws=!1m4!1m3!3m2!1stbd-2025-2026-484014!2sproiect_tbd). Pentru crearea acestuia am utilizat aceeași regiune ca pentru bucket. Apoi am creat două tabele, unul pentru fiecare fișier. În cadrul fișierului data.parquet coloana date este de tip datetime64, dar în BigQuery în schema era perceput ca INTEGER și în preview erau numere foarte mari așa că am convertit coloana la formatul 'date' și am regenerat și reîncărcat fișierul parquet.
+
+-> take care of link permissions !!!
+
+
