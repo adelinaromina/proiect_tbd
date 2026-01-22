@@ -30,20 +30,21 @@ movie_id = movie_row[0][0]
 new_user_id = ratings.agg({"customer_id": "max"}).collect()[0][0] + 1
 user_row = [(new_user_id, movie_id, 5.0)]
 user_df = spark.createDataFrame([Row(customer_id=int(x[0]), movie_id=int(x[1]), rating=float(x[2])) for x in user_row])
+print('lets see now', user_df.head())
 ratings = ratings.unionByName(user_df)
 
 inferenceDF = movies.join(user_df, on="movie_id", how="left_anti") \
                     .withColumn("customer_id", col("movie_id") * 0 + new_user_id)
 print('lets seeee')
 print(inferenceDF)
-predictions = model.transform(inferenceDF)
-top_recommendations = predictions.orderBy(col("prediction").desc()).limit(top_n)
-
-recommended_movie_ids = [row["movie_id"] for row in top_recommendations.collect()]
-recommended_titles = movies.filter(col("movie_id").isin(recommended_movie_ids)) \
-                             .select("title").rdd.map(lambda r: r[0]).collect()
-
-print(f"Top {top_n} recommendations for '{fav_movie}':")
-for i, title in enumerate(recommended_titles, 1):
-    print(f"{i}. {title}")
+# predictions = model.transform(inferenceDF)
+# top_recommendations = predictions.orderBy(col("prediction").desc()).limit(top_n)
+#
+# recommended_movie_ids = [row["movie_id"] for row in top_recommendations.collect()]
+# recommended_titles = movies.filter(col("movie_id").isin(recommended_movie_ids)) \
+#                              .select("title").rdd.map(lambda r: r[0]).collect()
+#
+# print(f"Top {top_n} recommendations for '{fav_movie}':")
+# for i, title in enumerate(recommended_titles, 1):
+#     print(f"{i}. {title}")
 spark.stop()
