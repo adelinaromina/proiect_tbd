@@ -36,6 +36,7 @@ inferenceDF = movies.join(user_df, on="movie_id", how="left_anti") \
                     .withColumn("customer_id", col("movie_id") * 0 + new_user_id)
 
 predictions = model.transform(inferenceDF)
+print(predictions)
 top_recommendations = predictions.orderBy(col("prediction").desc()).limit(top_n)
 
 recommended_movie_ids = [row["movie_id"] for row in top_recommendations.collect()]
