@@ -42,5 +42,4 @@ evaluator = RegressionEvaluator(metricName="rmse", labelCol="rating", prediction
 rmse = evaluator.evaluate(predictions)
 print(f"RMSE: {rmse}")
 
-model.save("gs://data_tbd/als-model/full_model")
-
+model.write().overwrite().save("gs://data_tbd/als-model/full_model")
