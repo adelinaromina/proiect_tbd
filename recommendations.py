@@ -1,5 +1,5 @@
 from pyspark.sql import SparkSession, Row
-from pyspark.sql.functions import col, lower
+from pyspark.sql.functions import col, lower, lit
 from pyspark.ml.recommendation import ALSModel
 import argparse
 
@@ -30,13 +30,13 @@ movie_id = movie_row[0][0]
 new_user_id = ratings.agg({"customer_id": "max"}).collect()[0][0] + 1
 user_row = [(new_user_id, movie_id, 5.0)]
 user_df = spark.createDataFrame([Row(customer_id=int(x[0]), movie_id=int(x[1]), rating=float(x[2])) for x in user_row])
-print('lets see now', user_df.head())
 ratings = ratings.unionByName(user_df)
 
-inferenceDF = movies.join(user_df, on="movie_id", how="left_anti") \
-                    .withColumn("customer_id", col("movie_id") * 0 + new_user_id)
+inferenceDF = movies.join(user_df.select("movie_id"), on="movie_id", how="left_anti") \
+                    .withColumn("customer_id", lit(new_user_id).cast("int")) \
+                    .select("customer_id", "movie_id")
 print('lets seeee')
-print(inferenceDF)
+print(inferenceDF.show(10, truncate=False))
 # predictions = model.transform(inferenceDF)
 # top_recommendations = predictions.orderBy(col("prediction").desc()).limit(top_n)
 #
