@@ -2,6 +2,7 @@ from pyspark.sql import SparkSession
 from pyspark.ml.recommendation import ALS
 from pyspark.ml.evaluation import RegressionEvaluator
 from pyspark.ml.tuning import ParamGridBuilder, CrossValidator
+import datetime
 
 spark = SparkSession.builder \
 .appName('proiect_tbd') \
@@ -42,4 +43,4 @@ evaluator = RegressionEvaluator(metricName="rmse", labelCol="rating", prediction
 rmse = evaluator.evaluate(predictions)
 print(f"RMSE: {rmse}")
 
-model.write().overwrite().save("gs://data_tbd/als-model/full_model")
+model.save(f"gs://data_tbd/als-model/{datetime.now().strftime('%Y%m%d_%H%M%S')}")
