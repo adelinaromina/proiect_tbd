@@ -35,16 +35,16 @@ ratings = ratings.unionByName(user_df)
 inferenceDF = movies.join(user_df.select("movie_id"), on="movie_id", how="left_anti") \
                     .withColumn("customer_id", lit(new_user_id).cast("int")) \
                     .select("customer_id", "movie_id")
-print('lets seeee')
 print(inferenceDF.show(10, truncate=False))
-# predictions = model.transform(inferenceDF)
-# top_recommendations = predictions.orderBy(col("prediction").desc()).limit(top_n)
-#
-# recommended_movie_ids = [row["movie_id"] for row in top_recommendations.collect()]
-# recommended_titles = movies.filter(col("movie_id").isin(recommended_movie_ids)) \
-#                              .select("title").rdd.map(lambda r: r[0]).collect()
-#
-# print(f"Top {top_n} recommendations for '{fav_movie}':")
-# for i, title in enumerate(recommended_titles, 1):
-#     print(f"{i}. {title}")
+predictions = model.transform(inferenceDF)
+top_recommendations = predictions.orderBy(col("prediction").desc()).limit(top_n)
+
+recommended_movie_ids = [row["movie_id"] for row in top_recommendations.collect()]
+recommended_titles = movies.filter(col("movie_id").isin(recommended_movie_ids)) \
+                             .select("title").rdd.map(lambda r: r[0]).collect()
+
+print(f"Top {top_n} recommendations for '{fav_movie}':")
+for i, title in enumerate(recommended_titles, 1):
+    print(f"{i}. {title}")
+
 spark.stop()
