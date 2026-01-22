@@ -10,7 +10,6 @@ args = parser.parse_args()
 spark = SparkSession.builder.appName("Recommendations").getOrCreate()
 
 g_bucket = 'gs://data_tbd'
-g_bucket = "./dataset/datasets/netflix-inc/netflix-prize-data/versions/2"
 movies = spark.read.parquet(f"{g_bucket}/movie_titles.parquet", header=True, inferSchema=True).select("movie_id", "title")
 ratings = spark.read.parquet(f"{g_bucket}/data_for_code.parquet", header=True, inferSchema=True).select("customer_id", "movie_id", "rating")
 
