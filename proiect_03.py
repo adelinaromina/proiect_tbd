@@ -43,4 +43,4 @@ evaluator = RegressionEvaluator(metricName="rmse", labelCol="rating", prediction
 rmse = evaluator.evaluate(predictions)
 print(f"RMSE: {rmse}")
 
-model.save(f"gs://data_tbd/als-model/{datetime.now().strftime('%Y%m%d_%H%M%S')}")
+model.save(f"gs://data_tbd/als-model/{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}")
