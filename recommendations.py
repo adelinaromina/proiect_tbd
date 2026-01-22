@@ -12,17 +12,15 @@ spark = SparkSession.builder.appName("Recommendations").getOrCreate()
 g_bucket = 'gs://data_tbd'
 movies = spark.read.parquet(f"{g_bucket}/movie_titles.parquet", header=True, inferSchema=True).select("movie_id", "title")
 ratings = spark.read.parquet(f"{g_bucket}/data_for_code.parquet", header=True, inferSchema=True).select("customer_id", "movie_id", "rating")
-print(movies.head())
-print(ratings.head())
+
 model = ALSModel.load("gs://data_tbd/als-model/full_model")
-print(model)
 
 fav_movie = args.movie
 top_n = 5
 
 movie_row = movies.filter(lower(col("title")).like(f"%{fav_movie.lower()}%")) \
                     .select("movie_id").collect()
-print(movie_row)
+
 if not movie_row:
     print(f"Filmul '{fav_movie}' nu a fost gasit in baza noastra de date :((!")
     spark.stop()
@@ -36,9 +34,9 @@ ratings = ratings.unionByName(user_df)
 
 inferenceDF = movies.join(user_df, on="movie_id", how="left_anti") \
                     .withColumn("customer_id", col("movie_id") * 0 + new_user_id)
-
+print('lets seeee')
+print(inferenceDF)
 predictions = model.transform(inferenceDF)
-print(predictions)
 top_recommendations = predictions.orderBy(col("prediction").desc()).limit(top_n)
 
 recommended_movie_ids = [row["movie_id"] for row in top_recommendations.collect()]
